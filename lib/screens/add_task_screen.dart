@@ -57,32 +57,45 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
 
     setState(() => _isSaving = true);
 
-    final task = TaskModel(
-      title: _titleController.text.trim(),
-      subject: _subjectController.text.trim(),
-      description: _descriptionController.text.trim(),
-      deadline: _selectedDeadline!,
-    );
-
-    final success = await context.read<TaskProvider>().addTask(task);
-
-    if (!mounted) return;
-
-    setState(() => _isSaving = false);
-
-    if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Tugas berhasil ditambahkan.'),
-          backgroundColor: Colors.green,
-        ),
+    try {
+      final task = TaskModel(
+        title: _titleController.text.trim(),
+        subject: _subjectController.text.trim(),
+        description: _descriptionController.text.trim(),
+        deadline: _selectedDeadline!,
       );
 
-      Navigator.pop(context, true);
-    } else {
+      final success = await context.read<TaskProvider>().addTask(task);
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tugas berhasil ditambahkan.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        Navigator.pop(context, true);
+      } else {
+        setState(() => _isSaving = false);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal menyimpan tugas. Silakan coba lagi.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _isSaving = false);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Gagal menyimpan tugas. Silakan coba lagi.'),
+          content: Text('Terjadi kesalahan saat menyimpan tugas.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -126,6 +139,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _titleController,
+                maxLength: 100,
                 decoration: _inputDecoration(
                   'Masukkan judul tugas',
                   Icons.assignment_outlined,
@@ -133,6 +147,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Judul tugas wajib diisi.';
+                  }
+                  if (value.trim().length > 100) {
+                    return 'Judul tugas maksimal 100 karakter.';
                   }
                   return null;
                 },
@@ -143,6 +160,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               const SizedBox(height: 8),
               TextFormField(
                 controller: _subjectController,
+                maxLength: 60,
                 decoration: _inputDecoration(
                   'Masukkan nama mata kuliah',
                   Icons.menu_book_outlined,
@@ -150,6 +168,9 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return 'Mata kuliah wajib diisi.';
+                  }
+                  if (value.trim().length > 60) {
+                    return 'Mata kuliah maksimal 60 karakter.';
                   }
                   return null;
                 },
@@ -171,7 +192,7 @@ class _AddTaskScreenState extends State<AddTaskScreen> {
               const Text('Tenggat Tugas'),
               const SizedBox(height: 8),
               InkWell(
-                onTap: _selectDeadline,
+                onTap: _isSaving ? null : _selectDeadline,
                 child: InputDecorator(
                   decoration: _inputDecoration(
                     'Pilih tanggal tenggat',
