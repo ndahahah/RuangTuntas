@@ -3,10 +3,16 @@ import 'package:flutter/material.dart';
 import '../models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
-  const TaskCard({super.key, required this.task, required this.onToggle});
+  const TaskCard({
+    super.key,
+    required this.task,
+    required this.onToggle,
+    this.onTap,
+  });
 
   final TaskModel task;
   final VoidCallback onToggle;
+  final VoidCallback? onTap;
 
   String get formattedDeadline {
     final day = task.deadline.day.toString().padLeft(2, '0');
@@ -24,6 +30,7 @@ class TaskCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       child: ListTile(
+        onTap: onTap,
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         leading: Checkbox(
           value: task.isCompleted,
@@ -43,9 +50,16 @@ class TaskCard extends StatelessWidget {
           padding: const EdgeInsets.only(top: 5),
           child: Text('${task.subject} • Tenggat: $formattedDeadline'),
         ),
-        trailing: Icon(
-          task.isCompleted ? Icons.check_circle : Icons.schedule,
-          color: task.isCompleted ? Colors.green : Colors.orange,
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              task.isCompleted ? Icons.check_circle : Icons.schedule,
+              color: task.isCompleted ? Colors.green : Colors.orange,
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.chevron_right, color: Colors.grey),
+          ],
         ),
       ),
     );

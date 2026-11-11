@@ -5,6 +5,7 @@ import '../providers/task_provider.dart';
 import '../widgets/summary_card.dart';
 import '../widgets/task_card.dart';
 import 'task_list_screen.dart';
+import 'add_task_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,6 +26,25 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Future<void> _openAddTask() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AddTaskScreen()),
+    );
+
+    if (!mounted) return;
+
+    // Memastikan dashboard menampilkan data terbaru.
+    context.read<TaskProvider>().fetchTasks();
+  }
+
+  void _openTaskList() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const TaskListScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,20 +54,21 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
-
-        // Tombol menuju halaman Daftar Tugas
         actions: [
           IconButton(
             tooltip: 'Daftar Tugas',
             icon: const Icon(Icons.list_alt),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const TaskListScreen()),
-              );
-            },
+            onPressed: _openTaskList,
           ),
         ],
+      ),
+
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _openAddTask,
+        backgroundColor: const Color(0xFF5267A5),
+        foregroundColor: Colors.white,
+        icon: const Icon(Icons.add),
+        label: const Text('Tambah Tugas'),
       ),
 
       body: Consumer<TaskProvider>(
@@ -102,14 +123,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icons.assignment_outlined,
                           color: const Color(0xFF5267A5),
                         ),
-
                         SummaryCard(
                           title: 'Selesai',
                           count: provider.completedTasks,
                           icon: Icons.task_alt,
                           color: Colors.green,
                         ),
-
                         SummaryCard(
                           title: 'Belum Selesai',
                           count: provider.pendingTasks,
@@ -131,7 +150,6 @@ class _HomeScreenState extends State<HomeScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-
                         Text(
                           '${provider.totalTasks} tugas',
                           style: TextStyle(color: Colors.grey.shade600),
@@ -195,16 +213,12 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Icon(Icons.assignment_outlined, size: 48, color: Color(0xFF5267A5)),
-
             SizedBox(height: 12),
-
             Text(
               'Belum ada tugas',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
-
             SizedBox(height: 5),
-
             Text(
               'Tugas yang kamu tambahkan akan muncul di sini.',
               textAlign: TextAlign.center,
@@ -224,20 +238,14 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             const Icon(Icons.cloud_off, color: Colors.red, size: 40),
-
             const SizedBox(height: 10),
-
             const Text('Gagal memuat data tugas'),
-
             const SizedBox(height: 8),
-
             Text(
               provider.errorMessage ?? 'Terjadi kesalahan.',
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 12),
-
             ElevatedButton.icon(
               onPressed: provider.fetchTasks,
               icon: const Icon(Icons.refresh),

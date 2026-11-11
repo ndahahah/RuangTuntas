@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models/task_model.dart';
 import '../providers/task_provider.dart';
 import '../widgets/task_card.dart';
+import 'add_task_screen.dart';
+import 'task_detail_screen.dart';
 
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
@@ -34,6 +36,26 @@ class _TaskListScreenState extends State<TaskListScreen> {
     super.dispose();
   }
 
+  Future<void> _openAddTask() async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => const AddTaskScreen()),
+    );
+
+    if (!mounted) return;
+
+    if (result == true) {
+      await context.read<TaskProvider>().fetchTasks();
+    }
+  }
+
+  void _openDetail(TaskModel task) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => TaskDetailScreen(task: task)),
+    );
+  }
+
   List<TaskModel> _filterTasks(List<TaskModel> tasks) {
     final keyword = _searchController.text.toLowerCase();
 
@@ -60,6 +82,14 @@ class _TaskListScreenState extends State<TaskListScreen> {
           'Daftar Tugas',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Tambah Tugas',
+            onPressed: _openAddTask,
+            icon: const Icon(Icons.add_circle_outline, size: 27),
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: Consumer<TaskProvider>(
         builder: (context, provider, child) {
@@ -93,7 +123,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ),
                 ),
               ),
-
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(
@@ -110,7 +139,6 @@ class _TaskListScreenState extends State<TaskListScreen> {
                   ],
                 ),
               ),
-
               Expanded(child: _buildTaskContent(provider, filteredTasks)),
             ],
           );
@@ -170,7 +198,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
     if (provider.tasks.isEmpty) {
       return _buildEmptyState(
         'Belum ada tugas',
-        'Tugas yang kamu tambahkan akan muncul di sini.',
+        'Tekan tombol + untuk menambahkan tugas baru.',
       );
     }
 
@@ -191,6 +219,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
           return TaskCard(
             task: task,
+            onTap: () => _openDetail(task),
             onToggle: () async {
               final success = await provider.toggleTaskStatus(task);
 
