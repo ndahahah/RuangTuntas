@@ -28,14 +28,19 @@ class TaskProvider extends ChangeNotifier {
 
   // Mengambil data tugas dari Supabase
   Future<void> fetchTasks() async {
+    if (_isLoading) return;
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _tasks = await _repository.getTasks();
+      final fetchedTasks = await _repository.getTasks();
+      _tasks = fetchedTasks;
     } catch (error) {
-      _errorMessage = error.toString();
+      debugPrint('Fetch tasks error: $error');
+      _errorMessage =
+          'Gagal mengambil data tugas. Periksa koneksi internet Anda.';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -53,7 +58,8 @@ class TaskProvider extends ChangeNotifier {
 
       return true;
     } catch (error) {
-      _errorMessage = error.toString();
+      debugPrint('Add task error: $error');
+      _errorMessage = 'Gagal menambahkan tugas. Silakan coba kembali.';
       notifyListeners();
 
       return false;
@@ -76,7 +82,8 @@ class TaskProvider extends ChangeNotifier {
 
       return true;
     } catch (error) {
-      _errorMessage = error.toString();
+      debugPrint('Update task error: $error');
+      _errorMessage = 'Gagal memperbarui tugas. Silakan coba kembali.';
       notifyListeners();
 
       return false;
@@ -95,7 +102,8 @@ class TaskProvider extends ChangeNotifier {
 
       return true;
     } catch (error) {
-      _errorMessage = error.toString();
+      debugPrint('Delete task error: $error');
+      _errorMessage = 'Gagal menghapus tugas. Silakan coba kembali.';
       notifyListeners();
 
       return false;
