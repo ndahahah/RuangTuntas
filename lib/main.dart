@@ -12,14 +12,26 @@ Future<void> main() async {
 
   String? initializationError;
 
-  if (AppConfig.isSupabaseConfigured) {
+  // Periksa konfigurasi Supabase terlebih dahulu.
+  if (!AppConfig.isSupabaseConfigured) {
+    initializationError =
+        'Konfigurasi Supabase belum ditemukan. '
+        'Pastikan supabase_config.json tersedia '
+        'dan dijalankan menggunakan dart-define-from-file.';
+  } else {
     try {
+      // Inisialisasi Supabase sebelum menjalankan aplikasi.
       await Supabase.initialize(
-        url: AppConfig.supabaseUrl,
-        publishableKey: AppConfig.supabasePublishableKey,
+        url: AppConfig.supabaseUrl.trim(),
+        publishableKey: AppConfig.supabasePublishableKey.trim(),
       );
-    } catch (error) {
+
+      debugPrint('Supabase init completed');
+    } catch (error, stackTrace) {
       initializationError = error.toString();
+
+      debugPrint('Supabase initialization failed: $error');
+      debugPrintStack(stackTrace: stackTrace);
     }
   }
 
@@ -62,21 +74,40 @@ class InitializationErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('RuangTuntas'), centerTitle: false),
       body: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.cloud_off, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
+              const Icon(Icons.cloud_off_rounded, size: 72, color: Colors.red),
+              const SizedBox(height: 20),
               const Text(
-                'Koneksi Supabase belum berhasil',
+                'Koneksi Supabase Belum Berhasil',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 12),
-              Text(message, textAlign: TextAlign.center),
+              const Text(
+                'Aplikasi belum dapat mengakses database. '
+                'Periksa konfigurasi Supabase.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.red.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: SelectableText(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 13, color: Colors.red),
+                ),
+              ),
             ],
           ),
         ),

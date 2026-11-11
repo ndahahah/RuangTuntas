@@ -6,6 +6,7 @@ class AppConfig {
   );
 
   static bool get isSupabaseConfigured {
-    return supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
+    return supabaseUrl.trim().isNotEmpty &&
+        supabasePublishableKey.trim().isNotEmpty;
   }
 }

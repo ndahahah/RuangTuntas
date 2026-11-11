@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/task_provider.dart';
+import '../providers/quote_provider.dart';
 import '../widgets/summary_card.dart';
 import '../widgets/task_card.dart';
+import '../widgets/quote_card.dart';
 import 'task_list_screen.dart';
 import 'add_task_screen.dart';
 
@@ -22,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<TaskProvider>().fetchTasks();
+        context.read<QuoteProvider>().fetchQuote();
       }
     });
   }
@@ -34,7 +37,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     if (!mounted) return;
 
-    // Memastikan dashboard menampilkan data terbaru.
     context.read<TaskProvider>().fetchTasks();
   }
 
@@ -96,6 +98,11 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Atur tugas kuliahmu dan selesaikan tepat waktu.',
                       style: TextStyle(color: Colors.grey.shade700),
                     ),
+
+                    const SizedBox(height: 24),
+
+                    // REST API: Inspirasi Hari Ini
+                    const QuoteCard(),
 
                     const SizedBox(height: 24),
 
