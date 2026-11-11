@@ -128,6 +128,9 @@ Pengujian yang telah dilakukan pada aplikasi RuangTuntas meliputi:
 - Pengujian penyimpanan data: berhasil.
 - Pengujian koneksi Supabase: berhasil.
 - Pengujian REST API: berhasil.
+- Unit test TaskModel: pengujian konversi JSON ke model.
+- Unit test TaskModel: pengujian konversi model ke JSON.
+- Unit test TaskModel: pengujian perubahan status menggunakan copyWith.
 
 ## 10. Build APK Release
 
