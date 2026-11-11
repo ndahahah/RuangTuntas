@@ -16,6 +16,8 @@ class QuoteProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
 
   Future<void> fetchQuote() async {
+    if (_isLoading) return;
+
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -29,13 +31,12 @@ class QuoteProvider extends ChangeNotifier {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         _quote = QuoteModel.fromJson(data);
       } else {
-        throw Exception(
-          'Gagal mengambil kutipan. Kode: ${response.statusCode}',
-        );
+        throw Exception('HTTP ${response.statusCode}');
       }
     } on TimeoutException {
       _errorMessage = 'Koneksi terlalu lama. Silakan coba lagi.';
     } catch (error) {
+      debugPrint('Fetch quote error: $error');
       _errorMessage = 'Gagal memuat kutipan. Periksa koneksi internet.';
     } finally {
       _isLoading = false;
