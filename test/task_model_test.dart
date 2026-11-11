@@ -1,3 +1,4 @@
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:uts_indah_susanti_079/models/task_model.dart';
 
@@ -50,6 +51,18 @@ void main() {
       expect(updatedTask.isCompleted, true);
       expect(updatedTask.title, task.title);
       expect(updatedTask.id, task.id);
+    });
+
+    test('menggunakan nilai default untuk field opsional', () {
+      final task = TaskModel.fromJson({
+        'title': 'Belajar Flutter',
+        'subject': 'Pemrograman Mobile',
+        'deadline': '2026-11-20',
+      });
+
+      expect(task.id, '');
+      expect(task.description, '');
+      expect(task.isCompleted, false);
     });
   });
 }
