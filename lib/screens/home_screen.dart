@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/task_provider.dart';
 import '../widgets/summary_card.dart';
 import '../widgets/task_card.dart';
+import 'task_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -33,7 +34,22 @@ class _HomeScreenState extends State<HomeScreen> {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Theme.of(context).colorScheme.surface,
+
+        // Tombol menuju halaman Daftar Tugas
+        actions: [
+          IconButton(
+            tooltip: 'Daftar Tugas',
+            icon: const Icon(Icons.list_alt),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const TaskListScreen()),
+              );
+            },
+          ),
+        ],
       ),
+
       body: Consumer<TaskProvider>(
         builder: (context, provider, child) {
           return RefreshIndicator(
@@ -52,11 +68,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 6),
+
                     Text(
                       'Atur tugas kuliahmu dan selesaikan tepat waktu.',
                       style: TextStyle(color: Colors.grey.shade700),
                     ),
+
                     const SizedBox(height: 24),
 
                     const Text(
@@ -66,6 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 12),
 
                     GridView.count(
@@ -82,12 +102,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           icon: Icons.assignment_outlined,
                           color: const Color(0xFF5267A5),
                         ),
+
                         SummaryCard(
                           title: 'Selesai',
                           count: provider.completedTasks,
                           icon: Icons.task_alt,
                           color: Colors.green,
                         ),
+
                         SummaryCard(
                           title: 'Belum Selesai',
                           count: provider.pendingTasks,
@@ -109,12 +131,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+
                         Text(
                           '${provider.totalTasks} tugas',
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       ],
                     ),
+
                     const SizedBox(height: 12),
 
                     if (provider.isLoading && provider.tasks.isEmpty)
@@ -171,12 +195,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             Icon(Icons.assignment_outlined, size: 48, color: Color(0xFF5267A5)),
+
             SizedBox(height: 12),
+
             Text(
               'Belum ada tugas',
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
+
             SizedBox(height: 5),
+
             Text(
               'Tugas yang kamu tambahkan akan muncul di sini.',
               textAlign: TextAlign.center,
@@ -196,14 +224,20 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           children: [
             const Icon(Icons.cloud_off, color: Colors.red, size: 40),
+
             const SizedBox(height: 10),
+
             const Text('Gagal memuat data tugas'),
+
             const SizedBox(height: 8),
+
             Text(
               provider.errorMessage ?? 'Terjadi kesalahan.',
               textAlign: TextAlign.center,
             ),
+
             const SizedBox(height: 12),
+
             ElevatedButton.icon(
               onPressed: provider.fetchTasks,
               icon: const Icon(Icons.refresh),
